@@ -22,68 +22,62 @@ class CalculatorHome extends StatefulWidget {
 }
 
 class _CalculatorHomeState extends State<CalculatorHome> {
-  String _output = "0"; // The displayed value
-  String _currentInput = ""; // The value currently being typed
-  double _num1 = 0; // First number
-  double _num2 = 0; // Second number
-  String _operator = ""; // The operator (+, -, *, /)
+  String _output = "0";
+  String _currentInput = "";
+  double? firstNumber;
+  double? secondNumber;
+  String? operator;
 
-  // Function to handle button presses
   void _buttonPressed(String value) {
     setState(() {
-      // Clear button
       if (value == "C") {
         _output = "0";
         _currentInput = "";
-        _num1 = 0;
-        _num2 = 0;
-        _operator = "";
-      }
-      // Backspace button
-      else if (value == "<-") {
+        firstNumber = null;
+        secondNumber = null;
+        operator = null;
+      } else if (value == "<-") {
         if (_currentInput.isNotEmpty) {
           _currentInput = _currentInput.substring(0, _currentInput.length - 1);
           _output = _currentInput.isNotEmpty ? _currentInput : "0";
         }
-      }
-      // Operator buttons
-      else if (value == "+" || value == "-" || value == "*" || value == "/") {
+      } else if (value == "+" || value == "-" || value == "*" || value == "/") {
         if (_currentInput.isNotEmpty) {
-          _num1 = double.parse(_currentInput);
-          _operator = value;
+          firstNumber = double.parse(_currentInput);
+          operator = value;
           _currentInput = "";
+          _output = "";
         }
-      }
-      // Equal button
-      else if (value == "=") {
-        if (_operator.isNotEmpty && _currentInput.isNotEmpty) {
-          _num2 = double.parse(_currentInput);
+      } else if (value == "=") {
+        if (_currentInput.isNotEmpty &&
+            operator != null &&
+            firstNumber != null) {
+          secondNumber = double.parse(_currentInput);
 
-          switch (_operator) {
+          switch (operator) {
             case "+":
-              _output = (_num1 + _num2).toString();
+              _output = (firstNumber! + secondNumber!).toString();
               break;
             case "-":
-              _output = (_num1 - _num2).toString();
+              _output = (firstNumber! - secondNumber!).toString();
               break;
             case "*":
-              _output = (_num1 * _num2).toString();
+              _output = (firstNumber! * secondNumber!).toString();
               break;
             case "/":
-              _output = _num2 != 0 ? (_num1 / _num2).toString() : "Error";
+              _output = secondNumber != 0
+                  ? (firstNumber! / secondNumber!).toString()
+                  : "Error";
               break;
           }
 
-          // Reset for next operation
-          _num1 = 0;
-          _num2 = 0;
-          _operator = "";
+          firstNumber = null;
+          secondNumber = null;
+          operator = null;
           _currentInput = "";
         }
-      }
-      // Other buttons (numbers, dot, etc.)
-      else {
-        if (_currentInput == "0") {
+      } else {
+        if (_currentInput == "0" && value != ".") {
           _currentInput = value;
         } else {
           _currentInput += value;
@@ -95,23 +89,22 @@ class _CalculatorHomeState extends State<CalculatorHome> {
 
   @override
   Widget build(BuildContext context) {
-    // Calculator buttons
     final List<String> buttons = [
       "C",
       "*",
       "/",
       "<-",
-      "7",
-      "8",
+      "1",
+      "2",
       "9",
       "+",
       "4",
       "5",
       "6",
       "-",
-      "1",
-      "2",
-      "3",
+      "7",
+      "8",
+      "9",
       "*",
       "%",
       "0",
@@ -121,28 +114,39 @@ class _CalculatorHomeState extends State<CalculatorHome> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Calculator App"),
+        centerTitle: true,
+        title: const Text(
+          "Calculator App",
+          style: TextStyle(color: Colors.green),
+        ),
       ),
       body: Column(
         children: [
-          // Display area
-          Container(
+          // Input/Output Display
+          Padding(
             padding: const EdgeInsets.all(12.0),
-            alignment: Alignment.centerRight,
-            child: Text(
-              _output,
+            child: TextField(
+              readOnly: true,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
               style: const TextStyle(
                 fontSize: 36.0,
                 fontWeight: FontWeight.bold,
               ),
+              textAlign: TextAlign.right,
+              controller: TextEditingController(text: _output),
             ),
           ),
           const SizedBox(height: 10),
-          // Buttons grid
           Expanded(
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4, // 4 buttons per row
+                crossAxisCount: 4,
                 crossAxisSpacing: 8.0,
                 mainAxisSpacing: 8.0,
               ),
