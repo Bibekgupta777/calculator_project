@@ -125,24 +125,16 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       ),
       body: Column(
         children: [
-          // Text field for input and output
-          Padding(
+          // Display area
+          Container(
             padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              readOnly: true, // Prevent user typing
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
+            alignment: Alignment.centerRight,
+            child: Text(
+              _output,
               style: const TextStyle(
                 fontSize: 36.0,
                 fontWeight: FontWeight.bold,
               ),
-              textAlign: TextAlign.right,
-              controller: TextEditingController(text: _output),
             ),
           ),
           const SizedBox(height: 10),
